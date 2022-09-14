@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 namespace DesafioFundamentos.Models
 {
     public class Estacionamento
@@ -14,9 +15,14 @@ namespace DesafioFundamentos.Models
 
         public void AdicionarVeiculo()
         {
-            // TODO: Pedir para o usuário digitar uma placa (ReadLine) e adicionar na lista "veiculos"
-            // *IMPLEMENTE AQUI*
+            string placa;
+            do{
             Console.WriteLine("Digite a placa do veículo para estacionar:");
+            placa = Console.ReadLine();
+            }
+            while(ValidarPlaca(placa) == false);
+            
+            veiculos.Add(placa);
         }
 
         public void RemoverVeiculo()
@@ -25,7 +31,7 @@ namespace DesafioFundamentos.Models
 
             // Pedir para o usuário digitar a placa e armazenar na variável placa
             // *IMPLEMENTE AQUI*
-            string placa = "";
+            string placa = Console.ReadLine();
 
             // Verifica se o veículo existe
             if (veiculos.Any(x => x.ToUpper() == placa.ToUpper()))
@@ -35,11 +41,13 @@ namespace DesafioFundamentos.Models
                 // TODO: Pedir para o usuário digitar a quantidade de horas que o veículo permaneceu estacionado,
                 // TODO: Realizar o seguinte cálculo: "precoInicial + precoPorHora * horas" para a variável valorTotal                
                 // *IMPLEMENTE AQUI*
-                int horas = 0;
-                decimal valorTotal = 0; 
+                int horas = Convert.ToInt32(Console.ReadLine());
+                decimal valorTotal = precoInicial + precoPorHora * horas; 
 
                 // TODO: Remover a placa digitada da lista de veículos
                 // *IMPLEMENTE AQUI*
+                veiculos.Remove(placa);
+
 
                 Console.WriteLine($"O veículo {placa} foi removido e o preço total foi de: R$ {valorTotal}");
             }
@@ -57,11 +65,54 @@ namespace DesafioFundamentos.Models
                 Console.WriteLine("Os veículos estacionados são:");
                 // TODO: Realizar um laço de repetição, exibindo os veículos estacionados
                 // *IMPLEMENTE AQUI*
+                for(int i=0; i<veiculos.Count(); i++)
+                    Console.WriteLine(veiculos[i]);
             }
             else
             {
                 Console.WriteLine("Não há veículos estacionados.");
             }
         }
+
+        private static bool ValidarPlaca(string placa)
+        {
+            if (string.IsNullOrWhiteSpace(placa)) { 
+                Console.WriteLine("Placa Inválida");
+                Console.WriteLine("Digite qualquer tecla para inserir nova placa");
+                Console.ReadLine();
+                return false; 
+            }
+
+            if (placa.Length > 8) { 
+                Console.WriteLine("Placa Inválida");
+                Console.WriteLine("Digite qualquer tecla para inserir nova placa");
+                Console.ReadLine();
+                return false; 
+            }
+
+            placa = placa.Replace("-", "").Trim();
+
+            if (char.IsLetter(placa, 4))
+            {
+                var padraoMercosul = new Regex("[a-zA-Z]{3}[0-9]{1}[a-zA-Z]{1}[0-9]{2}");
+                if(padraoMercosul.IsMatch(placa)==false){
+                    Console.WriteLine("Placa Inválida");
+                    Console.WriteLine("Digite qualquer tecla para inserir nova placa");
+                    Console.ReadLine();
+                }
+                return padraoMercosul.IsMatch(placa);
+            }
+            else
+            {
+                var padraoNormal = new Regex("[a-zA-Z]{3}[0-9]{4}");
+                if(padraoNormal.IsMatch(placa) == false){
+                    Console.WriteLine("Placa Inválida");
+                    Console.WriteLine("Digite qualquer tecla para inserir nova placa");
+                    Console.ReadLine();
+                }
+                return padraoNormal.IsMatch(placa);
+            }
+        }
     }
 }
+
